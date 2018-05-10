@@ -1,5 +1,5 @@
 # svalinn
-Windows Password Filter
+Svalinn is a [Windows Password Filter]("https://msdn.microsoft.com/en-us/library/windows/desktop/ms721882(v=vs.85).aspx"). 
 
 ## Installation
 
@@ -27,8 +27,11 @@ All configuration values must be specified and within valid ranges. **Failure to
 The required values are:
 
 **Server**: The server to send password requests to.
+
 **Port**: The TCP port to connect to.
+
 **Enable TLS**: Enable TLS on connections to the password filter server. **STRONGLY RECOMMENDED**.
+
 **Disable TLS Validation**: Disable validation of TLS certificates. **STRONGLY DISCOURAGED**.
 
 Please note that in production environments it is **strongly** recommended that users enable TLS and do not disable TLS validation. Misconfiguration of these values can drastically increase the risk of a man-in-the-middle attack intercepting passwords.
@@ -39,3 +42,11 @@ Please note that in production environments it is **strongly** recommended that 
 2. Reboot
 3. [Optional] Remove `svalinn.dll` from `%SYSTEMROOT\System32`.
     * Note: You cannot remove the dll until after a reboot. It must first be unloaded by the lsass process.
+
+
+#### Noteworthy Work
+
+This is not the first open source password filter. I have drawn inspiration from the following sources:
+
+* [OpenPasswordFilter](https://github.com/jephthai/OpenPasswordFilter)
+* [CredDefense](https://github.com/CredDefense/CredDefense)
