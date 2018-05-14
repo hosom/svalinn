@@ -1,0 +1,14 @@
+[Unit]
+Description=Password filtering daemon
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/passfilt
+RuntimeDirectory=passfilt
+ExecStart=/opt/passfilt/bin/passfilt
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

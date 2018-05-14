@@ -1,0 +1,14 @@
+server {
+	listen 0.0.0.0:443;
+	server_name passfilt.local;	
+
+	ssl_certificate		/etc/nginx/cert.crt;
+	ssl_certificate_key	/etc/nginx/cert.key;
+
+	ssl on;
+
+	location / {
+		proxy_pass http://unix:/var/run/passfilt/passfilt.socket:/;
+		proxy_pass_request_headers on;
+	}
+}
