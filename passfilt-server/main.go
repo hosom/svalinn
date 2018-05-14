@@ -5,11 +5,18 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
+	"os/signal"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
+)
+
+const (
+	socketName = "/var/run/passfilt/passfilt.socket"
 )
 
 // perform basic normalization of input files
@@ -82,26 +89,46 @@ func (a *api) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	fmt.Println("Starting password filter server...")
-
-	port := flag.String("port", "443", "port to bind the passfilt server to")
-	cert := flag.String("cert", "./cert", "file path to certificate file")
-	key := flag.String("key", "./key", "file path to key file")
 	banlist := flag.String("banlist", "./banlist.txt", "file path to banlist file")
-
 	flag.Parse()
 
-	passfilt := newAPI(*banlist)
+	if _, err := os.Stat(socketName); err == nil {
+		// socket exists, clean it up
+		fmt.Println("unix socket file already exists, cleaning up...")
+		if err := os.Remove(socketName); err != nil {
+			fmt.Println("Failed to remove stale socket file exiting.")
+			os.Exit(1)
+		}
+	}
 
+	listener, err := net.Listen("unix", socketName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	passfilt := newAPI(*banlist)
 	servMux := http.NewServeMux()
 	servMux.Handle("/", passfilt)
 
 	serv := &http.Server{
-		Addr:         fmt.Sprintf(":%s", *port),
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 		IdleTimeout:  5 * time.Second,
 		Handler:      servMux,
 	}
 
-	log.Fatal(serv.ListenAndServeTLS(*cert, *key))
+	// simple signal handler to cleanup unix socket file
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		sig := <-sigs
+		fmt.Println("Received shutdown signal: ", sig)
+		fmt.Println("Cleaning up unix socket...")
+		serv.Close()
+		os.Exit(0)
+	}()
+
+	if err := serv.Serve(listener); err != nil {
+		fmt.Println(err)
+	}
 }
