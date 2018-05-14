@@ -26,3 +26,16 @@ func TestIsPwnd(t *testing.T) {
 		t.Error("Random password detected as pwnd.")
 	}
 }
+
+func TestMetricEntropy(t *testing.T) {
+	s := "abbcccdddd"
+
+	if metricEntropy(s) != 0.18464393446710153 {
+		t.Error("Failed to calculate correct entropy.", metricEntropy(s))
+	}
+
+	s = ""
+	if metricEntropy(s) != 0 {
+		t.Error("Failed to handle empty string.", metricEntropy(s))
+	}
+}

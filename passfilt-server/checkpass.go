@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"crypto/sha1"
 	"fmt"
+	"math"
 	"net/http"
 	"strings"
 	"sync"
@@ -48,6 +49,32 @@ func isPwnd(p string) bool {
 
 	fmt.Printf("%s is not in a public data breach.", pSha1)
 	return false
+}
+
+// metricEntropy tries to measure the 'randomness' of a password
+// it returns the shannon entropy divided by the length of the
+// password.
+func metricEntropy(pass string) float64 {
+	m := map[rune]float64{}
+	for _, r := range pass {
+		m[r]++
+	}
+
+	var hx float64
+	for _, val := range m {
+		hx += val * math.Log2(val)
+	}
+
+	l := float64(len(pass))
+	hx = (math.Log2(l) - (hx / l))
+
+	mEntropy := hx / l
+
+	if math.IsNaN(mEntropy) {
+		return 0.0
+	}
+
+	return mEntropy
 }
 
 func checkpass(user string, pass string, banlist *sync.Map) bool {
