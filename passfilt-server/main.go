@@ -81,7 +81,6 @@ func (a *api) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// failed password evaluations receive a 403 response
-	fmt.Printf("Password %s failed to meet password requirements.", pass)
 	http.Error(w, "False", http.StatusForbidden)
 	a.rejected++
 	return
