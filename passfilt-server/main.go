@@ -60,7 +60,6 @@ func newAPI(bannedPasswordsFile string) *api {
 }
 
 func (a *api) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received request for password check.")
 	user, pass, ok := r.BasicAuth()
 
 	// specify that authentication is required for this server
@@ -74,7 +73,6 @@ func (a *api) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	if checkpass(user, pass, &a.banlist) {
 		// successful password evaluations receive a 200 response
-		fmt.Printf("Permitted password change for user %s", user)
 		fmt.Fprint(w, "OK")
 		a.allowed++
 		return

@@ -14,7 +14,7 @@ import (
 const (
 	// base URL for the HaveIBeenPwnd API
 	pwndAPIBase string = "https://api.pwnedpasswords.com"
-	logFmt      string = "User=%s UsernameInPassword=%t PasswordInBanlist=%t PasswordIsPwnd=%t PasswordEntropy=%g\n"
+	logFmt      string = "User=%s PassOK=%t UsernameInPassword=%t PasswordInBanlist=%t PasswordIsPwnd=%t PasswordEntropy=%g\n"
 )
 
 func passContainsUser(u string, p string) bool {
@@ -109,7 +109,7 @@ func checkpass(user string, pass string, banlist *sync.Map) bool {
 	// if any one of these conditions returns true, we should say that
 	// the password is NOT OK
 	passOk = !(userInPassword || passInBanlist || passIsPwnd)
-	fmt.Printf(logFmt, user, userInPassword,
+	fmt.Printf(logFmt, user, passOk, userInPassword,
 		passInBanlist, passIsPwnd, passEntropy)
 
 	return passOk
