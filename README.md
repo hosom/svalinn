@@ -6,7 +6,7 @@ Svalinn is a [Windows Password Filter]("https://msdn.microsoft.com/en-us/library
 Svalinn can be installed by following the instructions below.
 
 1. Add `svalinn.dll` to your `%SYSTEMROOT%\System32` directory.
-2. Modify the registry key located at `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa` and add `svalinn` as an entry. 
+2. Modify the registry key located at `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa` and add `svalinn` as an entry to `Notification Packages`. 
     **Do not remove any of the current entries in this registry key.**
 3. Reboot
 
@@ -26,19 +26,19 @@ All configuration values must be specified and within valid ranges. **Failure to
 
 The required values are:
 
-**Server**: The server to send password requests to.
+**Server**: The server to send password requests to. (REG_SZ, server name or IP)
 
-**Port**: The TCP port to connect to.
+**Port**: The TCP port to connect to. (REG_DWORD, port number)
 
-**Enable TLS**: Enable TLS on connections to the password filter server. **STRONGLY RECOMMENDED**.
+**Enable TLS**: Enable TLS on connections to the password filter server. **STRONGLY RECOMMENDED**. (REG_DWORD, 1 (enabled), 0 (disabled))
 
-**Disable TLS Validation**: Disable validation of TLS certificates. **STRONGLY DISCOURAGED**.
+**Disable TLS Validation**: Disable validation of TLS certificates. **STRONGLY DISCOURAGED**. (REG_DWORD, 1 (enabled), 0 (disabled))
 
 Please note that in production environments it is **strongly** recommended that users enable TLS and do not disable TLS validation. Misconfiguration of these values can drastically increase the risk of a man-in-the-middle attack intercepting passwords.
 
 ## Removal
 
-1. Remove the **svalinn** entry from `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa`. 
+1. Remove the **svalinn** entry in `Notification Packages` from `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa`. 
 2. Reboot
 3. [Optional] Remove `svalinn.dll` from `%SYSTEMROOT\System32`.
     * Note: You cannot remove the dll until after a reboot. It must first be unloaded by the lsass process.
